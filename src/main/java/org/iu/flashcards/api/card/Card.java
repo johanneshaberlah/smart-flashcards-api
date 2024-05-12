@@ -6,16 +6,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Collection;
-
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Stack {
+public class Card {
   @Id
   @GeneratedValue(generator = "increment")
   private Long id;
+
+  @ManyToOne
+  @JoinColumn
+  private Stack stack;
 
   @Column(nullable = false)
   @NotBlank
@@ -23,15 +25,9 @@ public class Stack {
 
   @Column(nullable = false)
   @NotBlank
-  private String name;
+  private String question;
 
   @Column(nullable = false)
   @NotBlank
-  private String color;
-
-  @OneToMany(mappedBy = "stack", fetch = FetchType.EAGER)
-  private Collection<StackUser> user;
-
-  @OneToMany(mappedBy = "stack", fetch = FetchType.EAGER)
-  private Collection<Card> cards;
+  private String answer;
 }

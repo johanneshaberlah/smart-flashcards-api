@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Service
@@ -32,7 +33,7 @@ public class LoginService {
 
   public ResponseEntity<LoginResult> performRegistration(RegistrationModel credentials) {
     var user = userRepository.save(
-      new User(null, UUID.randomUUID().toString(), credentials.name(), credentials.mail(), BCrypt.hashpw(credentials.password(), BCrypt.gensalt(CRYPTO_LOG_ROUNDS)))
+      User.create(credentials.name(), credentials.mail(), BCrypt.hashpw(credentials.password(), BCrypt.gensalt(CRYPTO_LOG_ROUNDS)))
     );
     return ResponseEntity.ok().body(new LoginResult(beginSession(user)));
   }
