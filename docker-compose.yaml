@@ -22,6 +22,8 @@ services:
     environment:
       MYSQL_DATABASE: flashcards
       MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - db_data:/var/lib/mysql
     networks:
       - app-network
     healthcheck:
@@ -30,6 +32,8 @@ services:
       timeout: 5s
       retries: 5
 
+volumes:
+  db_data:
 
 networks:
   app-network:
