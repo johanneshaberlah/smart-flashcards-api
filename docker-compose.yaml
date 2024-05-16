@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: flashcards_api
+    ports:
+      - "3001:3001"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/flashcards
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: password
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  database:
+    image: mysql:8.0
+    container_name: database
+    environment:
+      MYSQL_DATABASE: flashcards
+      MYSQL_ROOT_PASSWORD: password
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -uroot -ppassword" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+networks:
+  app-network:
+    driver: bridge

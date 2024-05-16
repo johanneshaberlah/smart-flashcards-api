@@ -6,8 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class SmartFlashcardsApiApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(SmartFlashcardsApiApplication.class, args);
-    }
-
+  public static void main(String[] args) {
+    SpringApplication.run(SmartFlashcardsApiApplication.class, args);
+  }
 }

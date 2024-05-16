@@ -8,13 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.UUID;
 
 @Service
 public class LoginService {
-  private final int CRYPTO_LOG_ROUNDS = 12;
-  private final String JWT_SECRET = "3776b7f2-474f-4236-9b88-e70f13e1063e";
+  private static final int CRYPTO_LOG_ROUNDS = 12;
+  private static final String JWT_SECRET = "3776b7f2-474f-4236-9b88-e70f13e1063e";
 
   private final UserRepository userRepository;
 
