@@ -26,14 +26,14 @@ public class LoginService {
     if (!BCrypt.checkpw(credentials.password(), user.getPassword())) {
       throw new LoginFailedException("WRONG_PASSWORD");
     }
-    return ResponseEntity.ok().body(new LoginResult(beginSession(user)));
+    return ResponseEntity.ok().body(new LoginResult(user.getName(), beginSession(user)));
   }
 
   public ResponseEntity<LoginResult> performRegistration(RegistrationModel credentials) {
     var user = userRepository.save(
       User.create(credentials.name(), credentials.mail(), BCrypt.hashpw(credentials.password(), BCrypt.gensalt(CRYPTO_LOG_ROUNDS)))
     );
-    return ResponseEntity.ok().body(new LoginResult(beginSession(user)));
+    return ResponseEntity.ok().body(new LoginResult(user.getName(), beginSession(user)));
   }
 
   private String beginSession(User user) {
