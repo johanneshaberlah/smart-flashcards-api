@@ -1,6 +1,8 @@
 package org.iu.flashcards.api.card;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,4 +31,8 @@ public class CardMaturity {
   @Basic
   private Timestamp maturity;
 
+  @Column
+  @Min(0)
+  @Max(10)
+  private int level;
 }
