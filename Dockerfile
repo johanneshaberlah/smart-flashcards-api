@@ -1,5 +1,5 @@
-# Use the official OpenJDK 17 image as the base image
-FROM openjdk:17-jdk-slim
+# Use a base image with Gradle installed
+FROM gradle:8.7.0-jdk17 AS build
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -8,8 +8,16 @@ WORKDIR /app
 COPY . .
 
 # Run Gradle to build the application
-# Use the ARG values as part of the command
-RUN ./gradlew build --no-daemon -x test
+RUN gradle build --no-daemon -x test
+
+# Use a smaller base image for the final run
+FROM openjdk:17-jdk-slim
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the built application from the build stage
+COPY --from=build /app/build/libs/smart-flashcards-api-0.0.1.jar /app/build/libs/smart-flashcards-api-0.0.1.jar
 
 # Set the entrypoint command to run the Spring Boot application
-ENTRYPOINT ["java", "-jar", "./build/libs/smart-flashcards-api-0.0.1.jar"]
+ENTRYPOINT ["java", "-jar", "/app/build/libs/smart-flashcards-api-0.0.1.jar"]
