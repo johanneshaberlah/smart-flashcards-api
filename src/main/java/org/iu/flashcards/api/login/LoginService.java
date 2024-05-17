@@ -30,6 +30,9 @@ public class LoginService {
   }
 
   public ResponseEntity<LoginResult> performRegistration(RegistrationModel credentials) {
+    if (userRepository.findByMail(credentials.mail()).isPresent()) {
+      throw new LoginFailedException("USER_ALREADY_EXISTS");
+    }
     var user = userRepository.save(
       User.create(credentials.name(), credentials.mail(), BCrypt.hashpw(credentials.password(), BCrypt.gensalt(CRYPTO_LOG_ROUNDS)))
     );
