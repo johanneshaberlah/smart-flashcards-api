@@ -2,6 +2,8 @@ package org.iu.flashcards.api.learning;
 
 import org.iu.flashcards.api.card.*;
 import org.iu.flashcards.api.login.User;
+import org.iu.flashcards.api.stack.Stack;
+import org.iu.flashcards.api.stack.StackUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

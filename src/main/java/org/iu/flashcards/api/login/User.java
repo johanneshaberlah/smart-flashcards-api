@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.iu.flashcards.api.card.StackUser;
+import org.iu.flashcards.api.stack.StackUser;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -41,7 +41,7 @@ public class User {
   private String password;
 
   @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-  private Collection<StackUser> user;
+  private Collection<StackUser> stackUser;
 
   public static User create(String name, String mail, String password) {
     User user = new User();

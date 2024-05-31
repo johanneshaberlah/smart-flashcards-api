@@ -12,7 +12,7 @@ import java.time.Instant;
 @Service
 public class LoginService {
   private static final int CRYPTO_LOG_ROUNDS = 12;
-  private static final String JWT_SECRET = "3776b7f2-474f-4236-9b88-e70f13e1063e";
+  public static final String JWT_SECRET = "3776b7f2-474f-4236-9b88-e70f13e1063e";
 
   private final UserRepository userRepository;
 
