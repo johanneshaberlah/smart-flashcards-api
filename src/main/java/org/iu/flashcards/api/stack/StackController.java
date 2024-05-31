@@ -1,9 +1,5 @@
 package org.iu.flashcards.api.stack;
 
-import org.iu.flashcards.api.card.Card;
-import org.iu.flashcards.api.card.CardContext;
-import org.iu.flashcards.api.login.UserComponent;
-import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,19 +18,28 @@ public class StackController {
   }
 
   @PostMapping("/stack")
-  public ResponseEntity<Stack> stack(@RequestBody StackContext stackContext) {
+  public ResponseEntity<Stack> createStack(@RequestBody StackContext stackContext) {
     return ResponseEntity.ok(stackService.createStack(stackContext));
   }
 
   @GetMapping("/stack")
-  public ResponseEntity<List<Stack>> stacks() {
+  public ResponseEntity<List<Stack>> listStacks() {
     return ResponseEntity.ok(stackService.stacks());
   }
 
   @GetMapping("/stack/{stack}")
-  public ResponseEntity<?> stack(@PathVariable("stack") String uniqueId) {
+  public ResponseEntity<?> readStack(@PathVariable("stack") String uniqueId) {
     try {
       return ResponseEntity.ok(stackService.findStack(uniqueId));
+    } catch (StackNotFoundException stackNotFound) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(stackNotFound.toApiError());
+    }
+  }
+
+  @DeleteMapping("/stack/{stack}")
+  public ResponseEntity<?> deleteStack(@PathVariable("stack") String uniqueId) {
+    try {
+      return ResponseEntity.ok(stackService.deleteStack(uniqueId));
     } catch (StackNotFoundException stackNotFound) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(stackNotFound.toApiError());
     }

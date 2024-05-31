@@ -33,11 +33,11 @@ public class Stack {
   @NotBlank
   private String color;
 
-  @OneToMany(mappedBy = "stack", fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "stack", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonIgnore
   private Collection<StackUser> user;
 
-  @OneToMany(mappedBy = "stack", fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "stack", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
   private Collection<Card> cards;
 
   public static Stack of(StackContext context) {
