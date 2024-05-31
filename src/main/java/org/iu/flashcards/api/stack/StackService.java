@@ -5,6 +5,7 @@ import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StackService {
@@ -32,13 +33,19 @@ public class StackService {
   }
 
   public Stack findStack(String uniqueId) {
-    return userComponentFactory.getObject().getUser().getStackUser()
+    return findStackUser(uniqueId)
       .stream()
-      .filter(stackUser -> stackUser.getStack().getUniqueId().trim().equals(uniqueId.trim()))
       .peek(stackUser -> stackUser.getStack().getCards().forEach(card -> card.setMaturity(stackUser.getMaturities().stream().filter(maturity -> maturity.getCard().getId().equals(card.getId())).findFirst().orElse(null))))
       .map(StackUser::getStack)
       .findFirst()
       .orElseThrow(StackNotFoundException::new);
+  }
+
+  public Optional<StackUser> findStackUser(String uniqueId) {
+    return userComponentFactory.getObject().getUser().getStackUser()
+      .stream()
+      .filter(stackUser -> stackUser.getStack().getUniqueId().trim().equals(uniqueId.trim()))
+      .findFirst();
   }
 
   public List<Stack> stacks() {

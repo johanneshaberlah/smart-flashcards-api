@@ -1,5 +1,6 @@
 package org.iu.flashcards.api.card;
 
+import org.iu.flashcards.api.stack.StackNotFoundException;
 import org.iu.flashcards.api.stack.StackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,11 +9,13 @@ import org.springframework.stereotype.Service;
 public class CardService {
   private final StackService stackService;
   private final CardRepository cardRepository;
+  private final CardMaturityRepository cardMaturityRepository;
 
   @Autowired
-  public CardService(StackService stackService, CardRepository cardRepository) {
+  public CardService(StackService stackService, CardRepository cardRepository, CardMaturityRepository cardMaturityRepository) {
     this.stackService = stackService;
     this.cardRepository = cardRepository;
+    this.cardMaturityRepository = cardMaturityRepository;
   }
 
   public Card findCard(String stackId, String cardId) {
@@ -33,8 +36,11 @@ public class CardService {
 
   public Card createCard(CardContext context) {
     var stack = stackService.findStack(context.stackId());
-    return cardRepository.save(
+    var stackUser = stackService.findStackUser(context.stackId()).orElseThrow(StackNotFoundException::new);
+    var card = cardRepository.save(
       Card.of(stack, context.question(), context.answer())
     );
+    cardMaturityRepository.save(CardMaturity.initialMaturity(stackUser, card));
+    return card;
   }
 }

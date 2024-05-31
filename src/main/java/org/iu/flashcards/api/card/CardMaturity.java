@@ -37,4 +37,8 @@ public class CardMaturity {
   @Min(0)
   @Max(10)
   private int level;
+
+  public static CardMaturity initialMaturity(StackUser user, Card card) {
+    return new CardMaturity(null, user, card, new Timestamp(System.currentTimeMillis()), 0);
+  }
 }
