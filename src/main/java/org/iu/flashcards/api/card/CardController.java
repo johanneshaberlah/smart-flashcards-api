@@ -1,5 +1,6 @@
 package org.iu.flashcards.api.card;
 
+import org.iu.flashcards.api.stack.StackNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +23,8 @@ public class CardController {
   public ResponseEntity<?> card(@RequestBody CardContext cardContext) {
     try {
       return ResponseEntity.ok(cardService.createCard(cardContext));
-    } catch (CardNotFoundException cardNotFound) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(cardNotFound.toApiError());
+    } catch (StackNotFoundException stackNotFound) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(stackNotFound.toApiError());
     }
   }
 }

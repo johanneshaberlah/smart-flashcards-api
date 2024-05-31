@@ -14,9 +14,9 @@ public class CardService {
   }
 
   public Card createCard(CardContext context) {
-    return stackService.findStack(context.stackId())
-      .map(stack -> Card.of(stack, context.question(), context.answer()))
-      .map(cardRepository::save)
-      .orElseThrow(() -> new CardNotFoundException("Stack was not found"));
+    var stack = stackService.findStack(context.stackId());
+    return cardRepository.save(
+      Card.of(stack, context.question(), context.answer())
+    );
   }
 }
