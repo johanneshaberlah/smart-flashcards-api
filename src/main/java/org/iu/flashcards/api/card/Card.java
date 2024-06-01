@@ -10,6 +10,7 @@ import org.iu.flashcards.api.common.DifficultyAndDuration;
 import org.iu.flashcards.api.stack.Stack;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,11 +40,15 @@ public class Card {
   @NotBlank
   private String answer;
 
+  @OneToMany(mappedBy = "card", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonIgnore
+  private Collection<CardMaturity> maturities;
+
   private transient List<DifficultyAndDuration> difficultyAndDurations = new ArrayList<>();
 
   private transient CardMaturity maturity;
 
   public static Card of(Stack stack, String question, String answer) {
-    return new Card(null, stack, UUID.randomUUID().toString(), question, answer, new ArrayList<>(), null);
+    return new Card(null, stack, UUID.randomUUID().toString(), question, answer, new ArrayList<>(), new ArrayList<>(), null);
   }
 }
