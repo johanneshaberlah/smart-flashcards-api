@@ -73,7 +73,7 @@ public class StackAssistantService {
           latch.countDown();
         }
       }, 0, CHECK_INTERVAL_MS, TimeUnit.MILLISECONDS);
-      ;
+
       if (latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS) && processCards(stackId, thread)) {
         scheduledFuture.cancel(true);
         logger.info("Cards processed");
@@ -100,12 +100,12 @@ public class StackAssistantService {
     if (messages.get(0).content().isEmpty()) {
       return false;
     }
-    logger.info("Parsing cards...");
     var response = messages.get(0).content().get(0).text()
       .value()
       .replace("`", "")
       .replace("json", "")
       .replace("\n", "");
+    logger.info(response);
 
     var cards = objectMapper.readValue(response, CardResponse[].class);
     for (CardResponse card : cards) {
@@ -239,8 +239,6 @@ public class StackAssistantService {
     // Senden der Anfrage und Abrufen der Antwort
     try (Response response = client.newCall(request).execute()) {
       var body = response.body().string();
-      logger.info("OpenAI Response:");
-      logger.info(body);
       if (!response.isSuccessful()) {
         throw new IOException("Unexpected code " + response);
       }
