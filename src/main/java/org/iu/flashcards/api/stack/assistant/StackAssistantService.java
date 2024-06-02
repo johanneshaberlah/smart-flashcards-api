@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class StackAssistantService {
-  private static final int TIMEOUT_SECONDS = 180                                                                     ;
+  private static final int TIMEOUT_SECONDS = 180;                                                                ;
   private static final int CHECK_INTERVAL_MS = 500;
   private final Logger logger = LoggerFactory.getLogger(StackAssistantService.class);
 
@@ -55,13 +55,11 @@ public class StackAssistantService {
       Thread thread = createThread();
       logger.info("Thread created " + thread.id());
       var prompt = "Hier ist das Folienskript einer Vorlesung in der Datei 'Skript.pdf' (" + file.id() + "). Analysiere das Dokument und erstelle Karteikarten im besprochenen Format." + (!customInstructions.isEmpty() ? "Außerdem gibt es folgenden Anmerkungen zum Inhalt der Karteikarte: " + customInstructions + "." : "");
-      Message message = createMessage(thread, file, prompt);
+      createMessage(thread, file, prompt);
       logger.info("Prompt: " + prompt);
 
       Run run = createRun(thread);
       logger.info("Run created " + run.id());
-
-      AtomicBoolean completedNormally = new AtomicBoolean(false);
 
       CountDownLatch latch = new CountDownLatch(1);
       ScheduledFuture<?> scheduledFuture = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
@@ -75,12 +73,10 @@ public class StackAssistantService {
           latch.countDown();
         }
       }, 0, CHECK_INTERVAL_MS, TimeUnit.MILLISECONDS);
-      latch.await();
-      logger.info("Latch is down");
-      scheduledFuture.cancel(true);
-      if (processCards(stackId, thread)) {
+      ;
+      if (latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS) && processCards(stackId, thread)) {
+        scheduledFuture.cancel(true);
         logger.info("Cards processed");
-
         return ResponseEntity.ok().body("OK.");
       } else {
         return ResponseEntity.internalServerError().body("Timeout reached while requesting OpenAI.");
