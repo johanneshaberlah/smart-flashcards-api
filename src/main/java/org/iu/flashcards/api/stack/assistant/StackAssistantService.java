@@ -18,10 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
@@ -66,23 +63,24 @@ public class StackAssistantService {
 
       AtomicBoolean completedNormally = new AtomicBoolean(false);
 
-      ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-      ScheduledFuture<?> scheduledFuture = scheduler.scheduleAtFixedRate(() -> {
+      CountDownLatch latch = new CountDownLatch(1);
+      ScheduledFuture<?> scheduledFuture = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
         try {
           Run currentRunStatus = retrieveRun(thread, run);
           if (currentRunStatus.status().equalsIgnoreCase("completed")) {
-            completedNormally.set(processCards(stackId, thread));
             logger.info("Card generation finished");
-            throw new RuntimeException();
+            latch.countDown();
           }
         } catch (Exception failure) {
-          throw new RuntimeException();
+          latch.countDown();
         }
       }, 0, CHECK_INTERVAL_MS, TimeUnit.MILLISECONDS);
-      scheduler.awaitTermination(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+      latch.await();
+      logger.info("Latch is down");
+      scheduledFuture.cancel(true);
+      if (processCards(stackId, thread)) {
+        logger.info("Cards processed");
 
-      if (completedNormally.get()) {
-        logger.info("OK");
         return ResponseEntity.ok().body("OK.");
       } else {
         return ResponseEntity.internalServerError().body("Timeout reached while requesting OpenAI.");
