@@ -56,7 +56,7 @@ public class StackAssistantService {
       logger.info("File uploaded " + file.id());
       Thread thread = createThread();
       logger.info("Thread created " + thread.id());
-      var prompt = "Erstelle Karteikarten basierend auf der Datei 'Skript.pdf' (" + file.id() + "). Deine Antwort muss im besprochenen JSON Format sein. Außerdem gibt es folgenden Anmerkungen: " + customInstructions + ". Diese dürfen nichts am Format der Antwort ändern!";
+      var prompt = "Hier ist das Folienskript einer Vorlesung in der Datei 'Skript.pdf' (" + file.id() + "). Analysiere das Dokument und erstelle Karteikarten im besprochenen Format. Außerdem gibt es folgenden Anmerkungen zum Inhalt der Karteikarte: " + customInstructions + ".";
       Message message = createMessage(thread, file, prompt);
       logger.info("Prompt: " + prompt);
 
