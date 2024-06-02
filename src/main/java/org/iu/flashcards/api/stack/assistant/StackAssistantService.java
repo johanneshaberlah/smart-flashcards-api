@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Service
 public class StackAssistantService {
   private static final int TIMEOUT_SECONDS = 180                                                                     ;
-  private static final int CHECK_INTERVAL_MS = 1000;
+  private static final int CHECK_INTERVAL_MS = 500;
   private final Logger logger = LoggerFactory.getLogger(StackAssistantService.class);
 
   private final String openAiKey;
@@ -71,44 +71,19 @@ public class StackAssistantService {
         try {
           Run currentRunStatus = retrieveRun(thread, run);
           if (currentRunStatus.status().equalsIgnoreCase("completed")) {
+            completedNormally.set(processCards(stackId, thread));
             logger.info("Card generation finished");
-            processCards(stackId, thread);
-            completedNormally.set(true);
-            scheduler.shutdown();
+            throw new RuntimeException();
           }
-        } catch (Exception e) {
-          e.printStackTrace();
-          scheduler.shutdown();
+        } catch (Exception failure) {
+          throw new RuntimeException();
         }
       }, 0, CHECK_INTERVAL_MS, TimeUnit.MILLISECONDS);
-
-      scheduler.schedule(() -> {
-        if (!scheduler.isShutdown()) {
-          scheduledFuture.cancel(true);
-          scheduler.shutdown();
-        }
-      }, TIMEOUT_SECONDS, TimeUnit.SECONDS);
       scheduler.awaitTermination(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-      if (completedNormally.get()) {
-        logger.info("Reading messages...");
-        var messages = readMessages(thread).data();
-        if (messages.isEmpty()) {
-          return ResponseEntity.internalServerError().body("No response from OpenAI.");
-        }
-        if (messages.get(0).content().isEmpty()) {
-          return ResponseEntity.internalServerError().body("No response from OpenAI.");
-        }
-        logger.info("Parsing cards...");
-        var response = messages.get(0).content().get(0).text();
 
-        var cards = objectMapper.readValue(response.value(), CardResponse[].class);
-        var createdCards = new ArrayList<>();
-        for (CardResponse card : cards) {
-          createdCards.add(card);
-          cardService.createCard(new CardContext(stackId, null, card.question(), card.answer()));
-        }
-        logger.info("OK - Cards created");
-        return ResponseEntity.ok(createdCards);
+      if (completedNormally.get()) {
+        logger.info("OK");
+        return ResponseEntity.ok().body("OK.");
       } else {
         return ResponseEntity.internalServerError().body("Timeout reached while requesting OpenAI.");
       }
@@ -122,8 +97,24 @@ public class StackAssistantService {
     }
   }
 
-  private void processCards(String stackId, Thread thread) throws IOException {
+  private boolean processCards(String stackId, Thread thread) throws IOException {
+    logger.info("Reading messages...");
+    var messages = readMessages(thread).data();
+    if (messages.isEmpty()) {
+      return false;
+    }
+    if (messages.get(0).content().isEmpty()) {
+      return false;
+    }
+    logger.info("Parsing cards...");
+    var response = messages.get(0).content().get(0).text();
 
+    var cards = objectMapper.readValue(response.value(), CardResponse[].class);
+    for (CardResponse card : cards) {
+      cardService.createCard(new CardContext(stackId, null, card.question(), card.answer()));
+    }
+    logger.info("OK - Cards created");
+    return true;
   }
 
   private Thread createThread() throws IOException {
