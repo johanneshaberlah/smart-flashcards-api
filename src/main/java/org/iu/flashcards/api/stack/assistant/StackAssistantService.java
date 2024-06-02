@@ -106,6 +106,7 @@ public class StackAssistantService {
         return ResponseEntity.internalServerError().body("Timeout reached while requesting OpenAI.");
       }
     } catch (IOException e) {
+      e.printStackTrace();
       return ResponseEntity.internalServerError().body(e.getMessage());
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
