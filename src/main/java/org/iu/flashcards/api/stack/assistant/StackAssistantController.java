@@ -1,4 +1,4 @@
-package org.iu.flashcards.api.stack.ai;
+package org.iu.flashcards.api.stack.assistant;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

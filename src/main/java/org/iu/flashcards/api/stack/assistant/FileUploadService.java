@@ -1,4 +1,4 @@
-package org.iu.flashcards.api.stack.ai;
+package org.iu.flashcards.api.stack.assistant;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
@@ -29,7 +29,7 @@ public class FileUploadService {
     // Build the multipart request body
     MultipartBody requestBody = new MultipartBody.Builder()
       .setType(MultipartBody.FORM)
-      .addFormDataPart("file", multipartFile.getOriginalFilename(), fileBody)
+      .addFormDataPart("file", "Skript.pdf", fileBody)
       .addFormDataPart("purpose", "assistants")
       .build();
 

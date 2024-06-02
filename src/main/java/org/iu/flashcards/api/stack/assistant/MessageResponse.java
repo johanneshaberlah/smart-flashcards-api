@@ -1,4 +1,4 @@
-package org.iu.flashcards.api.stack.ai;
+package org.iu.flashcards.api.stack.assistant;
 
 import java.util.List;
 
