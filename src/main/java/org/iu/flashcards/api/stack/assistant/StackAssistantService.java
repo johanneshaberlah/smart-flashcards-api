@@ -236,15 +236,15 @@ public class StackAssistantService {
       .get()
       .build();
 
-
     // Senden der Anfrage und Abrufen der Antwort
     try (Response response = client.newCall(request).execute()) {
+      var body = response.body().string();
       logger.info("OpenAI Response:");
-      logger.info(response.body().string());
+      logger.info(body);
       if (!response.isSuccessful()) {
         throw new IOException("Unexpected code " + response);
       }
-      return objectMapper.readValue(response.body().string(), MessageResponse.class);
+      return objectMapper.readValue(body, MessageResponse.class);
     }
   }
 }
