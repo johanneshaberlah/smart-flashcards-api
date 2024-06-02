@@ -105,9 +105,13 @@ public class StackAssistantService {
       return false;
     }
     logger.info("Parsing cards...");
-    var response = messages.get(0).content().get(0).text();
+    var response = messages.get(0).content().get(0).text()
+      .value()
+      .replace("`", "")
+      .replace("json", "")
+      .replace("\n", "");
 
-    var cards = objectMapper.readValue(response.value(), CardResponse[].class);
+    var cards = objectMapper.readValue(response, CardResponse[].class);
     for (CardResponse card : cards) {
       cardService.createCard(new CardContext(stackId, null, card.question(), card.answer()));
     }
