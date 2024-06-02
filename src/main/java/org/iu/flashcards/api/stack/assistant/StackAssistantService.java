@@ -79,6 +79,7 @@ public class StackAssistantService {
         logger.info("Cards processed");
         return ResponseEntity.ok().body("OK.");
       } else {
+        scheduledFuture.cancel(true);
         return ResponseEntity.internalServerError().body("Timeout reached while requesting OpenAI.");
       }
     } catch (IOException e) {
