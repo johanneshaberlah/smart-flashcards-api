@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class StackAssistantService {
-  private static final int TIMEOUT_SECONDS = 60                                                                     ;
+  private static final int TIMEOUT_SECONDS = 180                                                                     ;
   private static final int CHECK_INTERVAL_MS = 1000;
   private final Logger logger = LoggerFactory.getLogger(StackAssistantService.class);
 
@@ -56,7 +56,7 @@ public class StackAssistantService {
       logger.info("File uploaded " + file.id());
       Thread thread = createThread();
       logger.info("Thread created " + thread.id());
-      var prompt = "Hier ist das Folienskript einer Vorlesung in der Datei 'Skript.pdf' (" + file.id() + "). Analysiere das Dokument und erstelle Karteikarten im besprochenen Format. Außerdem gibt es folgenden Anmerkungen zum Inhalt der Karteikarte: " + customInstructions + ".";
+      var prompt = "Hier ist das Folienskript einer Vorlesung in der Datei 'Skript.pdf' (" + file.id() + "). Analysiere das Dokument und erstelle Karteikarten im besprochenen Format." + (!customInstructions.isEmpty() ? "Außerdem gibt es folgenden Anmerkungen zum Inhalt der Karteikarte: " + customInstructions + "." : "");
       Message message = createMessage(thread, file, prompt);
       logger.info("Prompt: " + prompt);
 
