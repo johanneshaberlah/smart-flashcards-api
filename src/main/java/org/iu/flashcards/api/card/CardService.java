@@ -34,6 +34,11 @@ public class CardService {
     return cardRepository.save(card);
   }
 
+  public void deleteCard(CardContext context) {
+    var card = findCard(context.stackId(), context.cardId());
+    cardRepository.delete(card);
+  }
+
   public Card createCard(CardContext context) {
     var stack = stackService.findStack(context.stackId());
     var stackUser = stackService.findStackUser(context.stackId()).orElseThrow(StackNotFoundException::new);

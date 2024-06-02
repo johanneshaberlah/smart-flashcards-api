@@ -38,6 +38,18 @@ public class CardController {
     }
   }
 
+  @DeleteMapping("/stack/{stack}/card/{card}")
+  public ResponseEntity<?> deleteCard(@RequestBody CardContext cardContext) {
+    try {
+      cardService.deleteCard(cardContext);
+      return ResponseEntity.ok().build();
+    } catch (StackNotFoundException stackNotFound) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(stackNotFound.toApiError());
+    } catch (CardNotFoundException cardNotFound) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(cardNotFound.toApiError());
+    }
+  }
+
   @PostMapping("/card")
   public ResponseEntity<?> createCard(@RequestBody CardContext cardContext) {
     try {
