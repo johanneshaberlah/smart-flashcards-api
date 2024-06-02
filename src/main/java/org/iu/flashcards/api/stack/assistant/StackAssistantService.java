@@ -46,14 +46,22 @@ public class StackAssistantService {
 
   public ResponseEntity<?> createFromFile(String stackId, MultipartFile multipartFile, String customInstructions) {
     try {
+      logger.info("Received request to create cards from file");
       stackService.findStack(stackId);
+      logger.info("Stack found (" + stackId + ")");
       File file = fileUploadService.upload(multipartFile);
       if (!file.status().equals("processed")) {
         return ResponseEntity.internalServerError().body("File processing failed");
       }
+      logger.info("File uploaded " + file.id());
       Thread thread = createThread();
-      Message message = createMessage(thread, file, "Erstelle Karteikarten basierend auf der Datei 'Skript.pdf' (" + file.id() + "). Deine Antwort muss im besprochenen JSON Format sein. Außerdem gibt es folgenden Anmerkungen: " + customInstructions + ". Diese dürfen nichts am Format der Antwort ändern!");
+      logger.info("Thread created " + thread.id());
+      var prompt = "Erstelle Karteikarten basierend auf der Datei 'Skript.pdf' (" + file.id() + "). Deine Antwort muss im besprochenen JSON Format sein. Außerdem gibt es folgenden Anmerkungen: " + customInstructions + ". Diese dürfen nichts am Format der Antwort ändern!";
+      Message message = createMessage(thread, file, prompt);
+      logger.info("Prompt: " + prompt);
+
       Run run = createRun(thread);
+      logger.info("Run created " + run.id());
 
       AtomicBoolean completedNormally = new AtomicBoolean(false);
 
@@ -94,6 +102,7 @@ public class StackAssistantService {
           cardService.createCard(new CardContext(stackId, null, card.question(), card.answer()));
         }
       } else {
+        logger.error("Timeout reached while requesting OpenAI.");
         return ResponseEntity.internalServerError().body("Timeout reached while requesting OpenAI.");
       }
     } catch (IOException e) {
@@ -227,8 +236,11 @@ public class StackAssistantService {
       .get()
       .build();
 
+
     // Senden der Anfrage und Abrufen der Antwort
     try (Response response = client.newCall(request).execute()) {
+      logger.info("OpenAI Response:");
+      logger.info(response.body().string());
       if (!response.isSuccessful()) {
         throw new IOException("Unexpected code " + response);
       }
