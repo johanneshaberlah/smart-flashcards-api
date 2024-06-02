@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -71,6 +72,7 @@ public class StackAssistantService {
           Run currentRunStatus = retrieveRun(thread, run);
           if (currentRunStatus.status().equalsIgnoreCase("completed")) {
             logger.info("Card generation finished");
+            processCards(stackId, thread);
             completedNormally.set(true);
             scheduler.shutdown();
           }
@@ -86,23 +88,28 @@ public class StackAssistantService {
           scheduler.shutdown();
         }
       }, TIMEOUT_SECONDS, TimeUnit.SECONDS);
-
       scheduler.awaitTermination(TIMEOUT_SECONDS, TimeUnit.SECONDS);
       if (completedNormally.get()) {
-        if (readMessages(thread).data().isEmpty()) {
+        logger.info("Reading messages...");
+        var messages = readMessages(thread).data();
+        if (messages.isEmpty()) {
           return ResponseEntity.internalServerError().body("No response from OpenAI.");
         }
-        if (readMessages(thread).data().get(0).content().isEmpty()) {
+        if (messages.get(0).content().isEmpty()) {
           return ResponseEntity.internalServerError().body("No response from OpenAI.");
         }
-        var response = readMessages(thread).data().get(0).content().get(0).text();
-        logger.info("Response from OpenAI: " + response.value());
+        logger.info("Parsing cards...");
+        var response = messages.get(0).content().get(0).text();
+
         var cards = objectMapper.readValue(response.value(), CardResponse[].class);
+        var createdCards = new ArrayList<>();
         for (CardResponse card : cards) {
+          createdCards.add(card);
           cardService.createCard(new CardContext(stackId, null, card.question(), card.answer()));
         }
+        logger.info("OK - Cards created");
+        return ResponseEntity.ok(createdCards);
       } else {
-        logger.error("Timeout reached while requesting OpenAI.");
         return ResponseEntity.internalServerError().body("Timeout reached while requesting OpenAI.");
       }
     } catch (IOException e) {
@@ -113,7 +120,10 @@ public class StackAssistantService {
     } catch (StackNotFoundException stackNotFoundException) {
       return ResponseEntity.notFound().build();
     }
-    return ResponseEntity.ok().build();
+  }
+
+  private void processCards(String stackId, Thread thread) throws IOException {
+
   }
 
   private Thread createThread() throws IOException {
