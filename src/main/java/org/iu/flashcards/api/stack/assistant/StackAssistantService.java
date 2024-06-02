@@ -6,6 +6,8 @@ import org.iu.flashcards.api.card.CardContext;
 import org.iu.flashcards.api.card.CardService;
 import org.iu.flashcards.api.stack.StackNotFoundException;
 import org.iu.flashcards.api.stack.StackService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class StackAssistantService {
   private static final int TIMEOUT_SECONDS = 60                                                                     ;
   private static final int CHECK_INTERVAL_MS = 1000;
+  private final Logger logger = LoggerFactory.getLogger(StackAssistantService.class);
 
   private final String openAiKey;
   private final StackService stackService;
@@ -49,7 +52,7 @@ public class StackAssistantService {
         return ResponseEntity.internalServerError().body("File processing failed");
       }
       Thread thread = createThread();
-      Message message = createMessage(thread, file, "Erstelle Karteikarten basierend auf der Datei. Deine Antwort muss im besprochenen JSON Format sein. Außerdem gibt es folgenden Anmerkungen: " + customInstructions + ". Diese dürfen nichts am Format der Antwort ändern!");
+      Message message = createMessage(thread, file, "Erstelle Karteikarten basierend auf der Datei 'Skript.pdf' (" + file.id() + "). Deine Antwort muss im besprochenen JSON Format sein. Außerdem gibt es folgenden Anmerkungen: " + customInstructions + ". Diese dürfen nichts am Format der Antwort ändern!");
       Run run = createRun(thread);
 
       AtomicBoolean completedNormally = new AtomicBoolean(false);
@@ -58,8 +61,8 @@ public class StackAssistantService {
       ScheduledFuture<?> scheduledFuture = scheduler.scheduleAtFixedRate(() -> {
         try {
           Run currentRunStatus = retrieveRun(thread, run);
-          System.out.println("Run Status: " + currentRunStatus.status());
           if (currentRunStatus.status().equalsIgnoreCase("completed")) {
+            logger.info("Card generation finished");
             completedNormally.set(true);
             scheduler.shutdown();
           }
@@ -85,6 +88,7 @@ public class StackAssistantService {
           return ResponseEntity.internalServerError().body("No response from OpenAI.");
         }
         var response = readMessages(thread).data().get(0).content().get(0).text();
+        logger.info("Response from OpenAI: " + response.value());
         var cards = objectMapper.readValue(response.value(), CardResponse[].class);
         for (CardResponse card : cards) {
           cardService.createCard(new CardContext(stackId, null, card.question(), card.answer()));
