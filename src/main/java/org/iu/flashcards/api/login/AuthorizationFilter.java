@@ -40,7 +40,7 @@ public class AuthorizationFilter implements Filter {
     String path = httpRequest.getRequestURI();
     String authHeader = httpRequest.getHeader("Authorization");
 
-    if ("/login".equals(path) || "/signup".equals(path)) {
+    if ("/login".equals(path) || "/signup".equals(path) || path.contains("doc")) {
       // Skip filter for /login and /signup
       chain.doFilter(request, response);
     } else {
