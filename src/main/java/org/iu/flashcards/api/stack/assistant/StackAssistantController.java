@@ -18,7 +18,11 @@ public class StackAssistantController {
   }
 
   @PostMapping("/stack/{stackId}/createFromFile")
-  public ResponseEntity<?> createFromFile(@PathVariable("stackId") String stackId, @RequestParam("file") MultipartFile file, @RequestParam("custom-instructions") String customInstructions) {
+  public ResponseEntity<?> createFromFile(
+    @PathVariable("stackId") String stackId,
+    @RequestParam("file") MultipartFile file,
+    @RequestParam("custom-instructions") String customInstructions
+  ) {
     return stackAssistantService.createFromFile(stackId, file, customInstructions);
   }
 }

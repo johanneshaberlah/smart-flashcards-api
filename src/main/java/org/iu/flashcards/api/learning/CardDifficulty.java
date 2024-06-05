@@ -6,31 +6,31 @@ import java.util.concurrent.TimeUnit;
 
 public enum CardDifficulty {
   EASY("Einfach", "#22C55E", new Duration[]{
-    new Duration(10, TimeUnit.MINUTES),
-    new Duration(1, TimeUnit.HOURS),
-    new Duration(6, TimeUnit.HOURS),
-    new Duration(12, TimeUnit.HOURS),
-    new Duration(2, TimeUnit.DAYS),
-    new Duration(4, TimeUnit.DAYS),
-    new Duration(7, TimeUnit.DAYS),
-    new Duration(14, TimeUnit.DAYS),
-    new Duration(30, TimeUnit.DAYS),
+    createDuration(10, TimeUnit.MINUTES),
+    createDuration(1, TimeUnit.HOURS),
+    createDuration(6, TimeUnit.HOURS),
+    createDuration(12, TimeUnit.HOURS),
+    createDuration(2, TimeUnit.DAYS),
+    createDuration(4, TimeUnit.DAYS),
+    createDuration(7, TimeUnit.DAYS),
+    createDuration(14, TimeUnit.DAYS),
+    createDuration(30, TimeUnit.DAYS),
 
   }),
   MEDIUM("Mittel", "#F97316", (new Duration[]{
-    new Duration(2, TimeUnit.MINUTES),
-    new Duration(5, TimeUnit.MINUTES),
-    new Duration(10, TimeUnit.MINUTES),
-    new Duration(30, TimeUnit.MINUTES),
-    new Duration(45, TimeUnit.MINUTES),
-    new Duration(1, TimeUnit.HOURS),
-    new Duration(2, TimeUnit.HOURS),
+    createDuration(2, TimeUnit.MINUTES),
+    createDuration(5, TimeUnit.MINUTES),
+    createDuration(10, TimeUnit.MINUTES),
+    createDuration(30, TimeUnit.MINUTES),
+    createDuration(45, TimeUnit.MINUTES),
+    createDuration(1, TimeUnit.HOURS),
+    createDuration(2, TimeUnit.HOURS),
   })),
   HARD("Schwer", "#EF4444", (new Duration[]{
-    new Duration(1, TimeUnit.MINUTES),
-    new Duration(1, TimeUnit.MINUTES),
-    new Duration(2, TimeUnit.MINUTES),
-    new Duration(10, TimeUnit.MINUTES),
+    createDuration(1, TimeUnit.MINUTES),
+    createDuration(1, TimeUnit.MINUTES),
+    createDuration(2, TimeUnit.MINUTES),
+    createDuration(10, TimeUnit.MINUTES),
   }));
 
   private final String name;
@@ -41,6 +41,10 @@ public enum CardDifficulty {
     this.name = name;
     this.color = color;
     this.maturityIncrementLevels = maturityIncrementLevels;
+  }
+
+  private static Duration createDuration(int amount, TimeUnit unit) {
+    return new Duration(amount, unit);
   }
 
   public String getColor() {
