@@ -79,11 +79,9 @@ public class RunFactory {
           return;
         }
         try {
-          System.out.println("Response received, processing...");
           if (response.body() != null) {
             String line;
             while (shouldContinue.get() && (line = response.body().source().readUtf8Line()) != null) {
-              System.out.println(line);
               if (line.contains("event: thread.message.completed")) {
                 System.out.println("RECEIVED MESSAGE COMPLETED EVENT");
                 var data = response.body().source().readUtf8Line();
@@ -113,6 +111,5 @@ public class RunFactory {
         break;
       }
     }
-
   }
 }
