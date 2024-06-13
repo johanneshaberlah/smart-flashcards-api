@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
-public class StackAssistantController {
-  private final StackAssistantService stackAssistantService;
+public class AssistantController {
+  private final AssistantService stackAssistantService;
 
   @Autowired
-  public StackAssistantController(StackAssistantService stackAssistantService) {
+  public AssistantController(AssistantService stackAssistantService) {
     this.stackAssistantService = stackAssistantService;
   }
 
@@ -23,6 +23,10 @@ public class StackAssistantController {
     @RequestParam("file") MultipartFile file,
     @RequestParam("custom-instructions") String customInstructions
   ) {
-    return stackAssistantService.createFromFile(stackId, file, customInstructions);
+    try {
+      return stackAssistantService.createFromFile(stackId, file, customInstructions);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

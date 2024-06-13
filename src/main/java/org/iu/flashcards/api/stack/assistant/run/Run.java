@@ -1,4 +1,4 @@
-package org.iu.flashcards.api.stack.assistant;
+package org.iu.flashcards.api.stack.assistant.run;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

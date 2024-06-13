@@ -37,6 +37,7 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-validation'
   implementation 'com.auth0:java-jwt:4.4.0'
   implementation "org.mindrot:jbcrypt:0.4"
+
   // implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
   runtimeOnly 'com.mysql:mysql-connector-j'
   annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
