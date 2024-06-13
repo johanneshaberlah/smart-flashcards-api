@@ -44,7 +44,7 @@ public class MessageFactory {
       .post(body)
       .build();
     try {
-      httpClient.newCall(request).execute();
+      httpClient.newCall(request).execute().close();
     } catch (IOException failure) {
       log.error("Creating a thread caused an exception", failure);
     }
@@ -68,7 +68,7 @@ public class MessageFactory {
       .post(body)
       .build();
     try {
-      httpClient.newCall(request).execute();
+      httpClient.newCall(request).execute().close();
     } catch (IOException failure) {
       log.error("Creating a thread caused an exception", failure);
     }
