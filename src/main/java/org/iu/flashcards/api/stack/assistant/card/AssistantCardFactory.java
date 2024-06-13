@@ -1,6 +1,7 @@
 package org.iu.flashcards.api.stack.assistant.card;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.iu.flashcards.api.card.Card;
 import org.iu.flashcards.api.card.CardContext;
 import org.iu.flashcards.api.card.CardService;
 import org.iu.flashcards.api.stack.assistant.message.Message;
@@ -47,5 +48,9 @@ public class AssistantCardFactory {
       cardService.createCard(new CardContext(stackId, null, card.question(), card.answer()));
     }
     return true;
+  }
+
+  public CardService cardService() {
+    return cardService;
   }
 }

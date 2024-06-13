@@ -38,9 +38,9 @@ public class RunFactory {
     this.credentials = credentials;
   }
 
-  public void createRunWithStreaming(Thread thread, Consumer<Message> messageConsumer) {
+  public void createRunWithStreaming(Thread thread, String assistant, Consumer<Message> messageConsumer) {
     Map<String, Object> payload = Map.of(
-      "assistant_id", credentials.assistantId(),
+      "assistant_id", assistant,
       "stream", true
     );
     String jsonPayload;
@@ -92,10 +92,9 @@ public class RunFactory {
           if (response.body() != null) {
             String line;
             while (shouldContinue.get() && (line = response.body().source().readUtf8Line()) != null) {
+              System.out.println(line);
               if (line.contains("event: thread.message.completed")) {
-                System.out.println("RECEIVED MESSAGE COMPLETED EVENT");
                 var data = response.body().source().readUtf8Line();
-                System.out.println("Payload: " + data);
                 consumer.accept(objectMapper.readValue(data.replace("data: ", ""), Message.class));
                 shouldContinue.set(false);  // Set false to stop further processing
               }

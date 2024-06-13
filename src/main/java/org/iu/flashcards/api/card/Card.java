@@ -40,6 +40,9 @@ public class Card {
   @NotBlank
   private String answer;
 
+  @Column(columnDefinition="TEXT")
+  private String hint;
+
   @OneToMany(mappedBy = "card", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonIgnore
   private Collection<CardMaturity> maturities;
@@ -49,6 +52,6 @@ public class Card {
   private transient CardMaturity maturity;
 
   public static Card of(Stack stack, String question, String answer) {
-    return new Card(null, stack, UUID.randomUUID().toString(), question, answer, new ArrayList<>(), new ArrayList<>(), null);
+    return new Card(null, stack, UUID.randomUUID().toString(), question, answer, "", new ArrayList<>(), new ArrayList<>(), null);
   }
 }

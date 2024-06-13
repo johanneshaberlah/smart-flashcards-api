@@ -6,4 +6,4 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("singleton")
-public record AssistantCredentials(@Value("${open-ai-key}") String apiKey, @Value("${open-ai-assistant}") String assistantId) { }
+public record AssistantCredentials(@Value("${open-ai-key}") String apiKey, @Value("${open-ai-assistant}") String assistantId, @Value("${open-ai-hint-machine}") String hintMachine) { }

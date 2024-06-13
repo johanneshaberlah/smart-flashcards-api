@@ -50,6 +50,30 @@ public class MessageFactory {
     }
   }
 
+  public void writeMessage(Thread thread, String message) {
+    Map<String, Object> payload = Map.of(
+      "role", "user",
+      "content", message
+    );
+    String json;
+    try {
+      json = objectMapper.writeValueAsString(payload);
+    } catch (IOException failure) {
+      log.error("Cannot write payload to json", failure);
+      return;
+    }
+    RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
+    Request request = new Request.Builder()
+      .url("https://api.openai.com/v1/threads/" + thread.id() + "/messages")
+      .post(body)
+      .build();
+    try {
+      httpClient.newCall(request).execute();
+    } catch (IOException failure) {
+      log.error("Creating a thread caused an exception", failure);
+    }
+  }
+
   private Map<String, Object> createPayload(File file, String message) {
     return Map.of(
       "role", "user",
