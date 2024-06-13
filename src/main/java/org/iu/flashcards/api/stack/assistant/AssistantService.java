@@ -91,8 +91,8 @@ public class AssistantService {
   public void createHintForOldCards() {
     cardFactory.cardService().findAll()
       .stream()
-      .limit(100)
       .filter(card -> card.getHint() == null || card.getHint().isEmpty())
+      .limit(100)
       .forEach(this::createHint);
   }
 }
