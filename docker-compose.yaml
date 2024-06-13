@@ -12,6 +12,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: password
       OPEN_AI_KEY: ${OPEN_AI_KEY}
       OPEN_AI_ASSISTANT: ${OPEN_AI_ASSISTANT}
+      OPEN_AI_HINT_MACHINE: ${OPEN_AI_HINT_MACHINE}
     depends_on:
       database:
         condition: service_healthy
