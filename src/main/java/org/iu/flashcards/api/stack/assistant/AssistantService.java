@@ -75,7 +75,7 @@ public class AssistantService {
 
   public void createHint(Card card) {
     Logger.getLogger(OkHttpClient.class.getName()).setLevel(Level.FINE);
-    System.out.println("Creating hint for card " + card.toString());
+    System.out.println("Creating hint for card " + card.getId());
     Thread thread = threadFactory.createThread().orElseThrow();
     var prompt = String.format("Frage: %s \n Antwort: %s", card.getQuestion(), card.getAnswer());
     messageFactory.writeMessage(thread, prompt);
