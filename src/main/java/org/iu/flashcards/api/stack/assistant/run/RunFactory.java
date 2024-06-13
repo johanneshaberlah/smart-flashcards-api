@@ -13,8 +13,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -60,7 +64,13 @@ public class RunFactory {
   }
 
   private void executeWithStreaming(Request request, Consumer<Message> consumer) {
-    OkHttpClient client = new OkHttpClient();
+    System.out.println("Launching client with increased timeout");
+    OkHttpClient client = new OkHttpClient.Builder()
+      .callTimeout(Duration.of(5, ChronoUnit.MINUTES))
+      .readTimeout(Duration.of(5, ChronoUnit.MINUTES))
+      .connectTimeout(Duration.of(5, ChronoUnit.MINUTES))
+      .writeTimeout(Duration.of(5, ChronoUnit.MINUTES))
+      .build();
     AtomicBoolean shouldContinue = new AtomicBoolean(true);
     var call = client.newCall(request);
     call.enqueue(new Callback() {
