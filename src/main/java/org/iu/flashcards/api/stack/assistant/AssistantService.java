@@ -75,12 +75,14 @@ public class AssistantService {
 
   public void createHint(Card card) {
     Logger.getLogger(OkHttpClient.class.getName()).setLevel(Level.FINE);
+    System.out.println("Creating hint for card " + card.toString());
     Thread thread = threadFactory.createThread().orElseThrow();
     var prompt = String.format("Frage: %s \n Antwort: %s", card.getQuestion(), card.getAnswer());
     messageFactory.writeMessage(thread, prompt);
     runFactory.createRunWithStreaming(thread, credentials.hintMachine(), message -> {
       var hint = message.content().get(0).text().value();
       card.setHint(hint);
+      System.out.println("Hint: " + hint);
       cardFactory.cardService().save(card);
     });
   }
